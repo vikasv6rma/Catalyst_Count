@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{%load static%}
+
+
+{% block extraStyle %} 
+<style>
+  
+    .viewMoreStyle{
+        font-weight:bold;
+        /* cursor:pointer;
+        text-decoration: underline; */
+    }
+
+    .textBoxSize{
+        width:80%;
+        height:35px;
+    }
+
+    .dropdownFeatures1{
+        font-size:15px;
+        width:52%;
+        height:35px;
+        border: 1px solid #ced4da !important;
+    }
+
+    .dropdownFeatures{
+        font-size:15px;
+        width:80%;
+        height:35px;
+        /* appearance: menulist-button; */
+        border: 1px solid #ced4da !important;
+        }
+
+    .boldFont{
+        font-weight: bold;
+    }
+
+
+    .alignRight{
+        text-align: right;
+    }
+
+    .alignLeft{
+        text-align: left;
+    }
+
+    .fontSize{
+        font-size: 16px !important;
+    }
+
+    .fontSizeChange{
+        font-size: 13px !important;
+    }
+
+    .center {
+        /* border: 5px; */
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+        display: flex;
+        }
+
+    /* .container.wrapper{
+        padding: 25px 50px 75px 100px;
+    } */
+    
+
+</style>   
+{% endblock %}
+
+
+{% block content %}
+<!-- INNER CONTENT  -->
+<div class="main-panel">
+    <div class="content-wrapper">
+
+        <div class="container">
+            <div id="alertContainer"></div>
+
+            <h4 class="my-4"> Users </h4>
+            <button type="button" style="width:15%; float:right; font-weight:bold;" class="btn btn-primary btn-sm my-3" data-toggle="modal" data-target="#userModal">Add User</button>
+
+            <!-- Modal Starts  -->
+            <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add new user </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="userName" class="col-form-label">Name:</label>
+                                <input type="text" class="form-control" id="userName">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emailId" class="col-form-label">Email ID:</label>
+                                <input type="text" class="form-control" id="emailId">
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="isActive" value="Active" id="active" value="option1" checked>
+
+                                <label class="form-check-label" for="active">
+                                  Active
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="isActive" value="Inactive"  id="inActive" value="option2">
+
+                                <label class="form-check-label" for="inActive">
+                                  Inactive
+                                </label>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="addUser()" class="btn btn-primary">Submit</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Ends  -->
+
+            <!-- Table Starts  -->
+            <table class="table ">
+                <thead>
+                  <tr>
+                    <th scope="col"> Name </th>
+                    <th scope="col"> Email </th>
+                    <th scope="col"> IsActive </th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for data in userDetails %}
+                    <tr>
+                    <td> {{data.name}} </td>
+                    <td> {{data.email_id}} </td>
+                    <td> {{data.is_active}} </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Table Ends  -->
+    </div>    
+</div>
+
+<!-- container closed -->
+
+{% endblock %}
+
+
+
+
+
+
+{% block js %} 
+<!-- Adding script here  -->
+
+
+<script>
+        function showAlert(message, alertType) {
+            var alertHtml = `
+            <div class="alert alert-${alertType} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            `;
+            $('#alertContainer').html(alertHtml);
+        }
+</script>
+
+
+
+
+
+<script>
+    function addUser(){
+        console.log("################# addUser() #########################")
+       
+        var userName = $("#userName").val();
+        console.log("userName ---->",userName) 
+
+        var emailId = $("#emailId").val();
+        console.log("emailId ---->",emailId) 
+
+        var isActive = $('input[name="isActive"]:checked').val();
+        console.log("isActive ---->",isActive)
+
+        payload= JSON.stringify({
+                        'userName': userName,
+                        'emailId': emailId,
+                        'isActive': isActive,
+                    })
+
+        $.ajax({
+                url: "{{baseUrl}}addUser",
+                type: "POST",
+                data:{
+                    'payload': payload,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                 },
+
+                success: function(data) {
+                    console.log("data ---->",data);
+                    var status = data.status
+                    console.log("status ---->",status);
+
+                    if (status == true){
+                        // alert(data.message);
+                        // $("#userModal").hide("slow", function(){
+                        //     showAlert(data.message, "success");
+                        // });
+
+                        showAlert(data.message, "success");
+                        $('#userModal').modal('hide');
+                    }
+                    else{
+                        showAlert(data.message, "danger");
+                    }       
+                },
+
+                complete: function(){},
+                error: function(xhr,textStatus,thrownError){cold}
+            });  
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

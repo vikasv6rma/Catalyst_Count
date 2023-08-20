@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{%load static%}
+
+
+{% block extraStyle %} 
+<style>
+  
+    .viewMoreStyle{
+        font-weight:bold;
+        /* cursor:pointer;
+        text-decoration: underline; */
+    }
+
+    .textBoxSize{
+        width:80%;
+        height:35px;
+    }
+
+    .dropdownFeatures1{
+        font-size:15px;
+        width:52%;
+        height:35px;
+        border: 1px solid #ced4da !important;
+    }
+
+    .dropdownFeatures{
+        font-size:15px;
+        width:80%;
+        height:35px;
+        /* appearance: menulist-button; */
+        border: 1px solid #ced4da !important;
+        }
+
+    .boldFont{
+        font-weight: bold;
+    }
+
+
+    .alignRight{
+        text-align: right;
+    }
+
+    .alignLeft{
+        text-align: left;
+    }
+
+    .fontSize{
+        font-size: 16px !important;
+    }
+
+    .fontSizeChange{
+        font-size: 13px !important;
+    }
+
+    .center {
+        /* border: 5px; */
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+        display: flex;
+        }
+
+    /* .container.wrapper{
+        padding: 25px 50px 75px 100px;
+    } */
+    
+
+</style>   
+{% endblock %}
+
+
+{% block content %}
+<!-- INNER CONTENT  -->
+<div class="main-panel">
+    <div class="content-wrapper">
+
+        <div class="container">
+            <div id="alertContainer"></div>
+            <h4 class="my-4"> Query Builder </h4>
+
+            <div class="row">
+                <!-- <div class="col-4">
+                    <input type="text" class="form-control textBoxSize mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Keyword">
+                </div> -->
+
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="industry" id="industry">
+                        <option value="">Industry</option>
+                        {% for industry in industryList %}
+                        <option value="{{industry}}">{{industry}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="yearFounded" id="yearFounded">
+                        <option value="">Year Founded</option>
+                        {% for yearFounded in yearFoundedList %}
+                        <option value="{{yearFounded}}">{{yearFounded}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="city" id="city">
+                            <option value="">City</option>
+                            {% for city in cityList %}
+                            <option value="{{city}}">{{city}}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row my-3">
+                
+
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="state" id="state">
+                        <option value="">State</option>
+                        {% for state in stateList %}
+                        <option value="{{state}}">{{state}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="country" id="country">
+                        <option value="">Country</option>
+                        {% for country in countryList %}
+                        <option value="{{country}}">{{country}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+          
+
+            <!-- <div class="row my-2">
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="empFrom" id="empFrom">
+                        <option value="">Employees (From)</option>
+                        {% for currentEmp in currentEmpList %}
+                        <option value="{{currentEmp}}">{{currentEmp}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-4">
+                    <select class="form-select dropdownFeatures" name="empTo" id="empTo">
+                        <option value="">Employees (To)</option>
+                        {% for currentTotal in currentTotalEmpList %}
+                        <option value="{{currentTotal}}">{{currentTotal}}</option>
+                        {% endfor %}
+                    </select>
+                </div> -->
+            </div>
+
+            <div class="row my-4">
+                <button type="button" onclick="dropdownSelection()" style="width:15%; margin-left:228px; font-weight:bold;" class="btn btn-primary btn-sm">Query Date</button>
+
+                <button type="button" style="width:10%; margin-left:25px; font-weight:bold;" class="btn btn-light btn-sm" onclick="clearDropdown()">Reset</button>
+            </div>
+
+        </div>
+
+    </div>    
+</div>
+
+<!-- container closed -->
+
+{% endblock %}
+
+
+
+
+
+
+
+{% block js %} 
+<!-- Adding script here  -->
+
+
+<script>
+    function showAlert(message, alertType) {
+        var alertHtml = `
+        <div class="alert alert-${alertType} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        `;
+        $('#alertContainer').html(alertHtml);
+    }
+</script>
+
+
+
+
+<script>
+
+    function clearDropdown(){
+        console.log("################# clearDropdown() #########################")
+        // alert('hello');
+        document.getElementById("industry").value = "";
+        document.getElementById("yearFounded").value = "";
+        document.getElementById("city").value = "";
+        document.getElementById("state").value = "";
+        document.getElementById("country").value = "";
+
+        showAlert("Reset successfully!", "success");
+    }
+</script>
+
+
+
+<script>
+
+    function dropdownSelection(){
+        console.log("################# dropdownSelection() #########################")
+    
+        var industry = $("#industry").val();
+        console.log("industry ---->",industry) 
+    
+        var yearFounded = $("#yearFounded").val();
+        console.log("yearFounded ---->",yearFounded) 
+    
+        var city = $("#city").val();
+        console.log("city ---->",city) 
+    
+        var state = $("#state").val();
+        console.log("state ---->",state) 
+    
+        var country = $("#country").val();
+        console.log("country ---->",country) 
+
+        if (industry.length == 0 &&  yearFounded.length == 0 && city.length == 0 && state.length == 0 && country.length == 0){
+            showAlert("Please choose atleast one field!", "warning");
+        }
+
+        payload= JSON.stringify({
+                        'industry': industry,
+                        'yearFounded': yearFounded,
+                        'city': city,
+                        'state': state,
+                        'country': country
+                    })
+
+
+        $.ajax({
+            url: "{{baseUrl}}queryDateFilter",
+            type: "POST",
+            data:{
+                'payload': payload,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+
+            success: function(data) {
+                console.log("data ---->",data);
+                var status = data.status
+                console.log("status ---->",status);
+
+                if (status == true){
+                    // alert(data.message);
+                    // $("#userModal").hide("slow", function(){
+                    //     showAlert(data.message, "success");
+                    // });
+
+                    showAlert(data.message, "success");
+                    $('#userModal').modal('hide');
+                }
+                else{
+                    showAlert(data.message, "danger");
+                }       
+            },
+
+            complete: function(){},
+            error: function(xhr,textStatus,thrownError){cold}
+        });  
+    }
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

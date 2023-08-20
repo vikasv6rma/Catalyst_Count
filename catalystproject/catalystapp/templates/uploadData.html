@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{%load static%}
+
+
+{% block extraStyle %} 
+<style>
+  
+    .viewMoreStyle{
+        font-weight:bold;
+        /* cursor:pointer;
+        text-decoration: underline; */
+    }
+
+    .dropdownFeatures{
+        font-size:15px;
+        width:55%;
+        height:40px;
+        /* appearance: menulist-button; */
+        border: 1px solid #ced4da !important;
+        }
+
+    .boldFont{
+        font-weight: bold;
+    }
+
+
+    .alignRight{
+        text-align: right;
+    }
+
+    .alignLeft{
+        text-align: left;
+    }
+
+    .fontSize{
+        font-size: 16px !important;
+    }
+
+    .fontSizeChange{
+        font-size: 13px !important;
+    }
+
+    .center {
+        /* border: 5px; */
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+        display: flex;
+        }
+
+
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            height: 20px;
+            }
+
+        .progress-bar {
+            height: 100%;
+            width: 20%;
+            background-color: rgb(43, 97, 223);
+            }
+
+
+    /* .container.wrapper{
+        padding: 25px 50px 75px 100px;
+    } */
+    
+
+</style>   
+{% endblock %}
+
+
+{% block content %}
+<!-- INNER CONTENT  -->
+<div class="main-panel">
+    <div class="content-wrapper">
+
+        <div class="container my-4">
+            <div id="alertContainer"></div>
+
+            <h4> Upload Data </h4>
+            
+            <!-- <p id="showFileName">No file chosen</p> -->
+
+            <div class="card my-3" style="width: 23rem;">
+                <div class="custom-file">
+                    
+                    <input type="file" class="custom-file-input" id="csvFile" onchange="fileUpload()">
+                    <label class="custom-file-label" id="showFile" for="csvFile">Select file</label>
+                    
+                </div>
+            </div> 
+
+            
+              <!-- <button id="startButton">Start Progress</button> -->
+            <button type="button"  style="width:15%;font-weight:bold;" onclick="startUploadingFile()" class="btn btn-primary btn-sm">Start Upload</button>
+    
+        
+        </div>
+    </div>    
+</div>
+
+<!-- container closed -->
+
+{% endblock %}
+
+
+
+
+
+
+{% block js %} 
+<!-- Adding script here  -->
+
+
+<script>
+    function showAlert(message, alertType) {
+        var alertHtml = `
+        <div class="alert alert-${alertType} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        `;
+        $('#alertContainer').html(alertHtml);
+    }
+  </script>
+
+
+
+
+<script>
+    function fileUpload(){
+      var x = document.getElementById("csvFile");
+      console.log("x --->",x)
+      var txt = "";
+      if ('files' in x) {
+        if (x.files.length == 0) {
+          txt = "Select file";
+        } 
+        else {
+          for (var i = 0; i < x.files.length; i++) {
+            var file = x.files[i];
+            if ('name' in file) {
+              txt += file.name + "<br>";
+            }
+          }
+        }
+      } 
+      else {
+        if (x.value == "") {
+          txt += "Select one or more files.";
+        } else {
+          txt += "The files property is not supported by your browser!";
+          txt  += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead. 
+        }
+      }
+      document.getElementById("showFile").innerHTML = txt;
+    }
+    </script>
+
+
+
+
+
+
+<script>
+
+    function startUploadingFile(){
+        console.log("################# startUploadingFile() #########################")
+
+        
+        // Progress Bar Ends
+
+        var form_Data = new FormData();
+        console.log("form_Data ---->",form_Data)
+
+        var selectedFile=$('#csvFile')[0].files[0];
+        console.log("selectedFile ---->",selectedFile)
+
+        form_Data.append('csvFile',selectedFile);
+        form_Data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+
+        showAlert("Started Uploading...", "success")
+
+        $.ajax({
+                url: "{{baseUrl}}uploadCSVFile",
+                type: "POST",
+                data:form_Data,
+                contentType:false,
+                processData:false,
+
+                success: function(data) {
+                    var o=JSON.parse(data);
+                    console.log("data ---->",o);
+                    var status = o.status
+                    console.log("status ---->",status);
+                    console.log("o.fileName ---->",o.fileName)
+                    console.log("o.fileName.length ---->",o.fileName.length)
+
+
+                    if (status == true){
+                        // alert(o.message);
+                        showAlert(o.message, "success");
+                    }
+                    else{
+                        // alert(o.message);
+                        showAlert(o.message, "danger");
+                    }       
+                },
+
+                complete: function(){},
+                error: function(xhr,textStatus,thrownError){}
+            });      
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
